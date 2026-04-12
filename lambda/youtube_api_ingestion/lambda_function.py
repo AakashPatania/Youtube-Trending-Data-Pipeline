@@ -7,7 +7,7 @@ from urllib.request import urlopen, Request
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 
-logger = logging.getlogger()
+logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
@@ -42,7 +42,7 @@ def fetch_trending_videos(region_code: str) -> dict:
         "key": API_KEY,
     })
 
-    url = f"{API_KEY}/videos?{params}"
+    url = f"{API_BASE}/videos?{params}"
 
     req = Request(url, headers={"Accept": "application/json"})
     with urlopen(req, timeout=30) as resp:
