@@ -19,9 +19,9 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from datetime import datetime
-from awsglue.dynamicframe import dynamicframe
+from awsglue.dynamicframe import DynamicFrame
 
-from pyspark.sql import function as F
+from pyspark.sql import functions as F
 
 from pyspark.sql.types import (
     StructType, StructField, StringType, LongType, BooleanType, TimestampType
@@ -65,8 +65,8 @@ BRONZE_DB = args["bronze_database"]
 BRONZE_TABLE = args["bronze_table"]
 SILVER_BUCKET = args["silver_bucket"]
 SILVER_DB = args["silver_database"]
-SILVER_TABLE = args["silver-database"]
-SILVER_PATH = f"s3://{Silver_Bucket}/youtube/statistics/"
+SILVER_TABLE = args["silver_table"]
+SILVER_PATH = f"s3://{SILVER_BUCKET}/youtube/statistics/"
 
 
 
@@ -96,7 +96,7 @@ datasource = glueContext.create_dynamic_frame.from_catalog(
 )
 
 
-df = datasouce.toDF()
+df = datasource.toDF()
 initial_count = df.count()
 logger.info(f"Bronze records read: {initial_count}")
 
@@ -113,7 +113,7 @@ else:
     
     columns = set(df.columns)
     
-    if "snippet.title" in columns or "snippet_title" in columns:
+    if "snippet.title" in columns or "snippet__title" in columns:
         
         # this is for json file from youtube API
         
@@ -192,7 +192,7 @@ else:
         )
     )
     
-     # Fill nulls for numeric columns with 0
+    # Fill nulls for numeric columns with 0
     numeric_cols = ["views", "likes", "dislikes", "comment_count"]
     for col_name in numeric_cols:
         df = df.withColumn(col_name, F.coalesce(F.col(col_name), F.lit(0)))
@@ -241,13 +241,13 @@ else:
         null_count = df.filter(F.col(col_name).isNull()).count()
         null_counts[col_name] = null_count
         if null_count > 0:
-            logger.warn(f"  DQ WARNING: {col_name} has {null_count} null values")
+            logger.warning(f"  DQ WARNING: {col_name} has {null_count} null values")
     
     
     
     negative_views = df.filter(F.col("views") < 0).count()
     if negative_views > 0:
-        logger.warn(f"  DQ WARNING: {negative_views} records with negative views")
+        logger.warning(f"  DQ WARNING: {negative_views} records with negative views")
 
     logger.info(f"  DQ check complete. Null counts: {null_counts}")
 
