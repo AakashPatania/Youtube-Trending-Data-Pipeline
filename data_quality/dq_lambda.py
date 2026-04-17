@@ -37,6 +37,12 @@ MAX_NULL_PCT = float(os.environ.get("DQ_MAX_NULL_PERCENT", "5.0"))
 MAX_VIEWS = 50_000_000_000  # 50B — sanity check for view counts
 FRESHNESS_HOURS = 48  # Data should be no older than this
 
+# ── Athena Config ─────────────────────────────────────────────────────────────
+ATHENA_WORKGROUP = os.environ.get("ATHENA_WORKGROUP", "primary")
+ATHENA_S3_OUTPUT = os.environ.get(
+    "ATHENA_S3_OUTPUT",
+    "s3://yt-data-pipeline-silver-ap-south-1-dev-ap/athena-results/"
+)
 
 CRITICAL_COLUMNS = {
     "clean_statistics": ["video_id", "title", "channel_title", "views", "region"],
@@ -190,6 +196,8 @@ def lambda_handler(event, context):
                 sql=query,
                 database=database,
                 ctas_approach=False,
+                workgroup=ATHENA_WORKGROUP,        # ← explicitly set workgroup
+                s3_output=ATHENA_S3_OUTPUT,        # ← explicit output path bypasses GetWorkGroup config lookup
             )
         except Exception as e:
             logger.error(f"Could not read {table_name}: {e}")
