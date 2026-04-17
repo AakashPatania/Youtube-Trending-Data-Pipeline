@@ -18,3 +18,6 @@ GLue Gold - yt_pipeline_gold_dev
 --silver_database yt_pipeline_silver_dev
 --silver_table clean_statistics
 
+--gold_bucket yt-data-pipeline-gold-ap-south-1-dev-ap
+--gold_database yt_pipeline_gold_dev
+
