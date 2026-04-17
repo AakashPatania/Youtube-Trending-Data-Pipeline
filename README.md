@@ -294,17 +294,6 @@ SNS is integrated to notify failures.
 
 ---
 
-## 🧠 Learnings
-
-- Built a real-world scalable data pipeline using AWS  
-- Gained hands-on experience with Glue ETL and Crawlers  
-- Learned to handle messy and inconsistent raw data  
-- Implemented a custom data quality framework  
-- Designed orchestration using Step Functions  
-- Debugged IAM roles and permission-related issues  
-- Optimized data storage using partitioning and Parquet  
-
----
 
 ## 🙌 Author
 
